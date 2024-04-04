@@ -34,8 +34,8 @@ def bulk_users():
     #parser = OptionParser() DEPRECATED
     file = input("csv to read: ")
     delimiter = input("csv seperator used: ")
-    while delimiter!="," or delimiter!=";" or delimiter!=".":
-        delimiter=input("ERROR Invalid delimiter. Use a valid seperator (, : ;): ")
+    #while delimiter!="," or delimiter!=";" or delimiter!=".":
+    #    delimiter=input("ERROR Invalid delimiter. Use a valid seperator (, : ;): ")
     with open(file) as csvfile:
         reader=csv.DictReader(csvfile, delimiter=delimiter)
         for row in reader:
@@ -97,6 +97,14 @@ def get_projects():
     endpoint = "/rest/api/2/projectCategory"
     call_type = "GET"
 
+start = input("Choose function:\n1. Bulk Users\n2. Bulk Projects")
+if start == "1":
+    bulk_users()
+elif start == "2":
+    bulk_projects()
+elif start != "1" or start != "2":
+    print("Invalid choice")
+    exit()
 
 api_call = "http://" + server + endpoint
 response = requests.request(
