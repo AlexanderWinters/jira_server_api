@@ -19,6 +19,7 @@ server = "server"
 username = input("Enter username: ")
 password = input("Enter password: ")
 auth = HTTPBasicAuth(username,password)
+headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
 endpoint = "api endpoint" #DEFINED BY FUNCTION
 call_type = "POST" #DEFINED BY FUNCTION
@@ -26,8 +27,17 @@ payload = ({
     "data": "data"
 }) #DEFINED BY FUNCTION
 
-headers = {"Accept": "application/json", "Content-Type": "application/json"}
 
+start = input("Choose function:\n\n1. Bulk Users\n2. Bulk Projects\n")
+if start == "1":
+    bulk_users()
+elif start == "2":
+    bulk_projects()
+elif start != "1" or start != "2":
+    print("Invalid choice")
+    exit()
+
+#PAYLOAD FUNCTIONS
 def bulk_users():
     endpoint = "/rest/api/2/project"
     call_type = "POST"
@@ -51,10 +61,8 @@ def bulk_users():
                 "name": name, 
                 "password": password 
                 } )
+            api_deploy(endpoint=endpoint, call_type=call_type, payload=payload)
     
-
-
-
 def bulk_projects():
     endpoint = "/rest/api/2/user"
     #parser = OptionParser() DEPRECATED
@@ -92,25 +100,32 @@ def bulk_projects():
                 #"notificationScheme": 10021,
                 "categoryId": catID
             } )
+            api_deploy(endpoint=endpoint, call_type=call_type, payload=payload)
 
 def get_projects():
     endpoint = "/rest/api/2/projectCategory"
     call_type = "GET"
+    api_deploy(endpoint=endpoint, call_type=call_type)
 
-start = input("Choose function:\n\n1. Bulk Users\n2. Bulk Projects\n")
-if start == "1":
-    bulk_users()
-elif start == "2":
-    bulk_projects()
-elif start != "1" or start != "2":
-    print("Invalid choice")
-    exit()
+#DEPLOYMENT FUNCTIONS
+def api_deploy(endpoint, call_type, payload):
+    api_call = "http://" + server + endpoint
+    print("Deploying to endpoint: " + api_call)
+    response = requests.request(
+        call_type, 
+        api_call, 
+        data=payload, 
+        headers=headers, 
+        auth=auth)
 
-api_call = "http://" + server + endpoint
-print("Deploying to endpoint: " + api_call)
-response = requests.request(
-    call_type, 
-    api_call, 
-    data=payload, 
-    headers=headers, 
-    auth=auth)
+def api_deploy(endpoint, call_type):
+    api_call = "http://" + server + endpoint
+    print("Deploying to endpoint: " + api_call)
+    response = requests.request(
+        call_type, 
+        api_call,
+        headers=headers, 
+        auth=auth)
+
+
+
