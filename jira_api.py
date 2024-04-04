@@ -14,8 +14,11 @@ from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
 
+load_dotenv()
+
 #SERVER INIT
-server = "server"
+server = os.getenv('SERVER')
+print("Delivering to server: " + server)
 username = input("Enter username: ")
 password = input("Enter password: ")
 auth = HTTPBasicAuth(username,password)
@@ -78,7 +81,6 @@ def bulk_projects():
             project_leader = row['Project Leader']
 
             #PAYLOAD VARIABLES
-            load_dotenv()
             project_key = os.getenv('PROJECT_KEY') +  group_number
             project_name = os.getenv('PROJECT_PREFIX') + group_name
             catID = os.getenv('CATEGORY_ID')
