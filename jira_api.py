@@ -30,15 +30,26 @@ payload = ({
     "data": "data"
 }) #DEFINED BY FUNCTION
 
+#DEPLOYMENT FUNCTIONS
+def api_deploy(endpoint, call_type, payload):
+    api_call = "http://" + server + endpoint
+    print("Deploying to endpoint: " + api_call)
+    response = requests.request(
+        call_type, 
+        api_call, 
+        data=payload, 
+        headers=headers, 
+        auth=auth)
 
-start = input("Choose function:\n\n1. Bulk Users\n2. Bulk Projects\n")
-if start == "1":
-    bulk_users()
-elif start == "2":
-    bulk_projects()
-elif start != "1" or start != "2":
-    print("Invalid choice")
-    exit()
+def api_deploy(endpoint, call_type):
+    api_call = "http://" + server + endpoint
+    print("Deploying to endpoint: " + api_call)
+    response = requests.request(
+        call_type, 
+        api_call,
+        headers=headers, 
+        auth=auth)
+    return response
 
 #PAYLOAD FUNCTIONS
 def bulk_users():
@@ -107,27 +118,24 @@ def bulk_projects():
 def get_projects():
     endpoint = "/rest/api/2/projectCategory"
     call_type = "GET"
-    api_deploy(endpoint=endpoint, call_type=call_type)
-
-#DEPLOYMENT FUNCTIONS
-def api_deploy(endpoint, call_type, payload):
     api_call = "http://" + server + endpoint
-    print("Deploying to endpoint: " + api_call)
-    response = requests.request(
-        call_type, 
-        api_call, 
-        data=payload, 
-        headers=headers, 
-        auth=auth)
-
-def api_deploy(endpoint, call_type):
-    api_call = "http://" + server + endpoint
-    print("Deploying to endpoint: " + api_call)
     response = requests.request(
         call_type, 
         api_call,
         headers=headers, 
         auth=auth)
+    print(response)
+    print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
 
+start = input("Choose function:\n\n1. Bulk Users\n2. Bulk Projects\n3. Get project categories\n")
+if start == "1":
+    bulk_users()
+elif start == "2":
+    bulk_projects()
+elif start == "3":
+    get_projects()
+elif start != "1" or start != "2" or start != "3":
+    print("Invalid choice")
+    exit()
 
 
