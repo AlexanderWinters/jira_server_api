@@ -13,4 +13,5 @@ To bulk create projects:
 - Edit the CATEGORY_ID variable and add the key for your category.
 - Edit the PROJECT_KEY. Needs to be short.
 - Edit the PROJECT_PREFIX. the prefix to the group name, as project name.
+- Create a .csv file with group_number, group_name, project_leader.
 
