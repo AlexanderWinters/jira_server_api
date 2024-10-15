@@ -41,19 +41,19 @@ def api_deploy(endpoint, call_type, payload):
         headers=headers, 
         auth=auth)
 
-def api_deploy(endpoint, call_type):
-    api_call = "http://" + server + endpoint
-    print("Deploying to endpoint: " + api_call)
-    response = requests.request(
-        call_type, 
-        api_call,
-        headers=headers, 
-        auth=auth)
-    return response
+#def api_deploy(endpoint, call_type):
+#    api_call = "http://" + server + endpoint
+#    print("Deploying to endpoint: " + api_call)
+#    response = requests.request(
+#        call_type, 
+#        api_call,
+#        headers=headers, 
+#        auth=auth)
+#    return response
 
 #PAYLOAD FUNCTIONS
 def bulk_users():
-    endpoint = "/rest/api/2/project"
+    endpoint = "/rest/api/2/user"
     call_type = "POST"
     #parser = OptionParser() DEPRECATED
     file = input("csv to read: ")
@@ -78,7 +78,7 @@ def bulk_users():
             api_deploy(endpoint=endpoint, call_type=call_type, payload=payload)
     
 def bulk_projects():
-    endpoint = "/rest/api/2/user"
+    endpoint = "/rest/api/2/project"
     #parser = OptionParser() DEPRECATED
     file = input("csv to read: ")
     delimiter = input("csv seperator used: ")
