@@ -6,6 +6,7 @@ This is a python script that contains function for the Jira API:
 - Bulk creating projects
 - Getting project category IDs
 
+You need the ```requests``` and ```python-dotenv``` libraries for python.
 Edit the SERVER environmental variable to match your server domain (not URL). The script default to the http protocol (will add functionality for https).
 To bulk create projects:
 - Run the script to get all the project category IDs.
