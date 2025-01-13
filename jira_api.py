@@ -18,12 +18,11 @@ load_dotenv()
 
 #SERVER INIT
 server = os.getenv('SERVER')
-print("Delivering to server: " + server)
+print("Active server at: " + server)
 username = input("Enter username: ")
 password = input("Enter password: ")
 auth = HTTPBasicAuth(username,password)
 headers = {"Accept": "application/json", "Content-Type": "application/json"}
-
 endpoint = "api endpoint" #DEFINED BY FUNCTION
 call_type = "POST" #DEFINED BY FUNCTION
 payload = ({
@@ -114,6 +113,30 @@ def bulk_projects():
                 "categoryId": catID
             } )
             api_deploy(endpoint=endpoint, call_type=call_type, payload=payload)
+def bulk_delete_users():
+    endpoint = "/rest/api/2/user"
+    call_type = "DELETE"
+    file = input("csv to read: ")
+    delimiter = input("csv seperator used: ")
+    while delimiter!="," and delimiter!=";" and delimiter!=".":
+        delimiter=input("ERROR Invalid delimiter. Use a valid seperator (, : ;): ")
+    with open(file) as csvfile:
+        reader=csv.DictReader(csvfile, delimiter=delimiter)
+        for row in reader:
+            name = row['name']
+            key = row['password']
+
+            #PAYLOAD
+            payload = "?" + "username=" + name #+ "&key=" + key
+            norm_payload = payload.replace(" ", "%20")
+            api_call = "http://" + server + endpoint + norm_payload
+            print("Deploying to endpoint: " + api_call)
+            response = requests.request(
+                call_type,
+                api_call,
+                data=payload,
+                headers=headers,
+                auth=auth)
 
 def get_projects():
     endpoint = "/rest/api/2/projectCategory"
@@ -127,14 +150,16 @@ def get_projects():
     print(response)
     print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
 
-start = input("Choose function:\n\n1. Bulk Users\n2. Bulk Projects\n3. Get project categories\n")
+start = input("Choose function:\n\n1. Bulk Users\n2. Bulk Projects\n3. Get project categories\n4. Bulk Delete users (CAUTION!)\n")
 if start == "1":
     bulk_users()
 elif start == "2":
     bulk_projects()
 elif start == "3":
     get_projects()
-elif start != "1" or start != "2" or start != "3":
+elif start == "4":
+    bulk_delete_users()
+elif start != "1" or start != "2" or start != "3" or start != "4":
     print("Invalid choice")
     exit()
 
