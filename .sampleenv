@@ -1,3 +1,4 @@
 PROJECT_KEY="key"
 PROJECT_PREFIX="prefix"
 CATEGORY_ID=10200
+SERVER=jira.example.com
