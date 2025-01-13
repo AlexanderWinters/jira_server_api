@@ -5,9 +5,10 @@ This is a python script that contains function for the Jira API:
 - Bulk adding users and sending emails
 - Bulk creating projects
 - Getting project category IDs
+- Bulk delete users (use with caution)
 
 You need the ```requests``` and ```python-dotenv``` libraries for python.
-Edit the SERVER environmental variable to match your server domain (not URL). The script default to the http protocol (will add functionality for https).
+Edit the SERVER environmental variable to match your server domain (not the URL). The script default to the http protocol (will add functionality for https).
 To bulk create projects:
 - Run the script to get all the project category IDs.
 - Find your project category and then it's ID.
