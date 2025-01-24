@@ -15,24 +15,19 @@ from email.mime.text import MIMEText
 
 #SERVER INIT
 headers = {"Accept": "application/json", "Content-Type": "application/json"}
-endpoint = "api endpoint" #DEFINED BY FUNCTION
-call_type = "POST" #DEFINED BY FUNCTION
-payload = ({
-    "data": "data"
-}) #DEFINED BY FUNCTION
 
 
 #API CALL DEF
 def api_deploy(server, username, password, protocol, endpoint, call_type, payload):
     auth = HTTPBasicAuth(username, password)
-    api_call = protocol + server + endpoint
-    print("Deploying to endpoint: " + api_call)
+    url = protocol + server + endpoint
     response = requests.request(
         call_type, 
-        api_call, 
+        url,
         data=payload, 
         headers=headers, 
         auth=auth)
+    return response
 
 def api_call_test(server, username, password, protocol):
     auth = HTTPBasicAuth(username, password)
@@ -41,30 +36,26 @@ def api_call_test(server, username, password, protocol):
     response = requests.get(url, auth=auth)
     return response
 #PAYLOAD FUNCTIONS
-def bulk_users():
+def bulk_users(server, username, password, protocol, file, delimiter):
     endpoint = "/rest/api/2/user"
     call_type = "POST"
-    #parser = OptionParser() DEPRECATED
-    file = input("csv to read: ")
-    delimiter = input("csv seperator used: ")
-    while delimiter!="," and delimiter!=";" and delimiter!=".":
-        delimiter=input("ERROR Invalid delimiter. Use a valid seperator (, : ;): ")
-    with open(file) as csvfile:
+    with open (file) as csvfile:
         reader=csv.DictReader(csvfile, delimiter=delimiter)
         for row in reader:
             emailAddress = row['emailAddress']
             displayName = row['displayName']
             name = row['name']
-            password = row['password']
+            key = row['password']
 
             #USER PAYLOAD
             payload = json.dumps( {
                 "emailAddress": emailAddress, 
                 "displayName": displayName, 
                 "name": name, 
-                "password": password 
+                "password": key
                 } )
-            api_deploy(endpoint=endpoint, call_type=call_type, payload=payload)
+            response = api_deploy(server, username, password, protocol, endpoint=endpoint, call_type=call_type, payload=payload)
+
     
 def bulk_projects():
     endpoint = "/rest/api/2/project"
