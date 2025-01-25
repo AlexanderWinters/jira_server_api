@@ -89,7 +89,7 @@ st.set_page_config(
         'About': "Trying to make Jira suck a little less. Follow me on Github for more cool projects. https://github.com/AlexanderWinters"
     }
 )
-st.title("Jira API Functions")
+st.title("Jira API Toolbox")
 st.subheader("Expand your Jira instance functionality with this tool.", help="First, connect to your Jira instance, and then pick a function to run.")
 
 #CONNECTION CONTAINER - CONNECT TO SERVER
