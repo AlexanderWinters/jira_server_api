@@ -78,6 +78,17 @@ def bulk_delete_users():
         #OUTPUT STDOUT
 
 #TITLE AND INTRO
+st.set_page_config(
+    page_title="Jira Tools",
+    page_icon="🛠️",
+    #layout="wide",
+    #initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com/AlexanderWinters/jira_server_api',
+        'Report a bug': "https://github.com/AlexanderWinters/jira_server_api/issues",
+        'About': "Trying to make Jira suck a little less. Follow me on Github for more cool projects."
+    }
+)
 st.title("Jira API Functions")
 st.subheader("Expand your Jira instance functionality with this tool.", help="First, connect to your Jira instance, and then pick a function to run.")
 

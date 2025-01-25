@@ -1,0 +1,6 @@
+services:
+  jira_api:
+    image: jira_api
+    container_name: jira_sucks
+    ports:
+      - 3002:8501
