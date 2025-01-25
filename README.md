@@ -1,5 +1,7 @@
 # Jira API Toolbox
 Jira sucks, so I made an API toolbox. A Streamlit web app that interacts with the Jira API. 
+<img width="997" alt="Screenshot 2025-01-25 at 20 59 34" src="https://github.com/user-attachments/assets/3d78ac9d-b11f-4c9c-b46c-563d94df8d41" />
+
 
 ## Deploy locally
 Install the Docker engine and run the following:
