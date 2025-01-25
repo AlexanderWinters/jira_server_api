@@ -60,15 +60,25 @@ if "server_connect" in st.session_state and st.session_state.server_connect["res
 
 st.subheader(" ")
 st.subheader("Choose function: ", divider="grey")
-col1, col2, col3, col4 = st.columns(4)
-if col1.button("Bulk Users", use_container_width=True ):
+box1, box2 = st.columns(2)
+box3, box4 = st.columns(2)
+if box1.button("Bulk Users", use_container_width=True):
     if "server_connect" in st.session_state and st.session_state.server_connect["connected"]:
         bulk_add_users()
     else :
         st.warning("Please connect to Jira server first.")
-if col2.button("Bulk Projects", use_container_width=True ):
-    st.write("Bulk Projects")
-if col3.button("Bulk Delete Users", use_container_width=True ):
-    st.write("Bulk Delete Users")
-if col4.button("Bulk Project Details", use_container_width=True ):
-    st.write("Bulk Project Details")
+if box2.button("Bulk Projects", use_container_width=True):
+    if "server_connect" in st.session_state and st.session_state.server_connect["connected"]:
+        st.write("create bulk projects")
+    else:
+        st.warning("Please connect to Jira server first.")
+if box3.button("Bulk Delete Users", use_container_width=True):
+    if "server_connect" in st.session_state and st.session_state.server_connect["connected"]:
+        st.write("delete users")
+    else:
+        st.warning("Please connect to Jira server first.")
+if box4.button("Project Details", use_container_width=True):
+    if "server_connect" in st.session_state and st.session_state.server_connect["connected"]:
+        st.write("get project details")
+    else:
+        st.warning("Please connect to Jira server first.")
