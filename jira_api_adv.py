@@ -56,9 +56,11 @@ def bulk_users(server, username, password, protocol, file, delimiter):
                 } )
             response = api_deploy(server, username, password, protocol, endpoint=endpoint, call_type=call_type, payload=payload)
 
-    
-def bulk_projects():
+
+#What is needed from the app: server creds, project key, category id,
+def bulk_projects(creds, p_key, catid):
     endpoint = "/rest/api/2/project"
+    call_type = "POST"
     #parser = OptionParser() DEPRECATED
     file = input("csv to read: ")
     delimiter = input("csv seperator used: ")
@@ -69,31 +71,30 @@ def bulk_projects():
         for row in reader:
             group_number = row['Group Number']
             group_name = row['Group Name']
-            project_leader = row['Project Leader']
+            leader = row['Project Leader']
 
             #PAYLOAD VARIABLES
-            project_key = os.getenv('PROJECT_KEY') +  group_number
-            project_name = os.getenv('PROJECT_PREFIX') + group_name
-            catID = os.getenv('CATEGORY_ID')
+            p_key = p_key + group_number
+            p_name = os.getenv('PROJECT_PREFIX') + group_name
             project_description = group_name
         
             #PAYLOAD
             payload = json.dumps( {
-                "key": project_key,
-                "name": project_name,
+                "key": p_key,
+                "name": p_name,
                 "projectTypeKey": "software",
                 "projectTemplateKey": "com.pyxis.greenhopper.jira:gh-scrum-template",
                 "description": project_description,
-                "lead": project_leader,
-                "url": "http://" + server,
+                "lead": leader,
+                "url": "http://" + creds["server"],
                 "assigneeType": "PROJECT_LEAD",
                 "avatarId": 10200,
                 #"issueSecurityScheme": 10001,
                 #"permissionScheme": 10011,
                 #"notificationScheme": 10021,
-                "categoryId": catID
+                "categoryId": catid
             } )
-            api_deploy(endpoint=endpoint, call_type=call_type, payload=payload)
+            api_deploy(creds["server"], creds["username"], creds["password"], creds["protocol"], endpoint=endpoint, call_type=call_type, payload=payload)
 def bulk_delete_users():
     endpoint = "/rest/api/2/user"
     call_type = "DELETE"
