@@ -86,7 +86,7 @@ st.set_page_config(
     menu_items={
         'Get Help': 'https://github.com/AlexanderWinters/jira_server_api',
         'Report a bug': "https://github.com/AlexanderWinters/jira_server_api/issues",
-        'About': "Trying to make Jira suck a little less. Follow me on Github for more cool projects."
+        'About': "Trying to make Jira suck a little less. Follow me on Github for more cool projects. https://github.com/AlexanderWinters"
     }
 )
 st.title("Jira API Functions")
