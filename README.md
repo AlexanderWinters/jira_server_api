@@ -1,19 +1,30 @@
-# Jira Server API (WIP)
-Function for the Jira Server API.
+# Jira API Toolbox
+Jira sucks, so I made an API toolbox. A Streamlit web app that interacts with the Jira API. 
 
-This is a python script that contains function for the Jira API:
-- Bulk adding users and sending emails
-- Bulk creating projects
-- Getting project category IDs
-- Bulk delete users (use with caution)
+## Deploy locally
+Install the Docker engine and run the following:
+```
+docker run -p 3000:8501 alexanderwinters/jira_api:latest
+```
+You can also download the docker compose file and run:
+```
+curl -o docker-compose.yml https://raw.githubusercontent.com/AlexanderWinters/jira_server_api/refs/heads/main/docker-compose.yml
+docker compose up -d
+```
 
-You need the ```requests``` and ```python-dotenv``` libraries for python.
-Edit the SERVER environmental variable to match your server domain (not the URL). The script default to the http protocol (will add functionality for https).
-To bulk create projects:
-- Run the script to get all the project category IDs.
-- Find your project category and then it's ID.
-- Edit the CATEGORY_ID variable and add the key for your category.
-- Edit the PROJECT_KEY. Needs to be short.
-- Edit the PROJECT_PREFIX. the prefix to the group name, as project name.
-- Create a .csv file with group_number, group_name, project_leader.
-
+## Local Development
+Clone the repo and install the ```requirements.txt```:
+```
+git clone https://github.com/AlexanderWinters/jira_server_api.git
+cd jira_server_api
+pip3 install -r requirements.txt
+```
+This will install streamlit as well. You can then test run it:
+```
+streamlit run app.py
+```
+## Future goals
+- [ ] Expand API functions
+- [ ] The API is based on Jira 8.14, although it has remained pretty similar. Investigate
+- [ ] Mobile app
+- [ ] Make a public instance
