@@ -36,7 +36,7 @@ def api_call_test(server, username, password, protocol):
     response = requests.get(url, auth=auth)
     return response
 #PAYLOAD FUNCTIONS
-def bulk_users(server, username, password, protocol, file, delimiter):
+def bulk_users(creds, file, delimiter):
     endpoint = "/rest/api/2/user"
     call_type = "POST"
     with open (file) as csvfile:
@@ -54,28 +54,30 @@ def bulk_users(server, username, password, protocol, file, delimiter):
                 "name": name, 
                 "password": key
                 } )
-            response = api_deploy(server, username, password, protocol, endpoint=endpoint, call_type=call_type, payload=payload)
+            response = api_deploy(creds["server"],
+                                  creds["username"],
+                                  creds["password"],
+                                  creds["protocol"],
+                                  endpoint=endpoint, call_type=call_type, payload=payload)
 
 
 #What is needed from the app: server creds, project key, category id,
-def bulk_projects(creds, p_key, catid):
+def bulk_projects(creds, catid, file, delimiter):
     endpoint = "/rest/api/2/project"
     call_type = "POST"
-    #parser = OptionParser() DEPRECATED
-    file = input("csv to read: ")
-    delimiter = input("csv seperator used: ")
-    while delimiter!="," and delimiter!=";" and delimiter!=".":
-        delimiter=input("ERROR Invalid delimiter. Use a valid seperator (, : ;): ")
+    url = creds["protocol"] + creds["server"]
+
     with open(file) as csvfile:
         reader=csv.DictReader(csvfile, delimiter=delimiter)
         for row in reader:
             group_number = row['Group Number']
             group_name = row['Group Name']
             leader = row['Project Leader']
-
-            #PAYLOAD VARIABLES
-            p_key = p_key + group_number
-            p_name = os.getenv('PROJECT_PREFIX') + group_name
+            p_key = row['Project Key'] + group_number
+            if row['Project Name']:
+                p_name = row['Project Name']
+            else:
+                p_name = p_key + group_name
             project_description = group_name
         
             #PAYLOAD
@@ -86,7 +88,7 @@ def bulk_projects(creds, p_key, catid):
                 "projectTemplateKey": "com.pyxis.greenhopper.jira:gh-scrum-template",
                 "description": project_description,
                 "lead": leader,
-                "url": "http://" + creds["server"],
+                "url": url,
                 "assigneeType": "PROJECT_LEAD",
                 "avatarId": 10200,
                 #"issueSecurityScheme": 10001,
@@ -94,7 +96,10 @@ def bulk_projects(creds, p_key, catid):
                 #"notificationScheme": 10021,
                 "categoryId": catid
             } )
-            api_deploy(creds["server"], creds["username"], creds["password"], creds["protocol"], endpoint=endpoint, call_type=call_type, payload=payload)
+            api_deploy(creds["server"],
+                       creds["username"],
+                       creds["password"],
+                       creds["protocol"], endpoint=endpoint, call_type=call_type, payload=payload)
 def bulk_delete_users():
     endpoint = "/rest/api/2/user"
     call_type = "DELETE"
@@ -120,16 +125,19 @@ def bulk_delete_users():
                 headers=headers,
                 auth=auth)
 
-def get_projects():
+def get_projects(creds):
     endpoint = "/rest/api/2/projectCategory"
     call_type = "GET"
-    api_call = "http://" + server + endpoint
+    url = creds["protocol"] + creds["server"] + endpoint
+    auth = HTTPBasicAuth(creds["username"], creds["password"])
     response = requests.request(
         call_type, 
-        api_call,
+        url,
         headers=headers, 
         auth=auth)
-    print(response)
-    print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+    formatted_response = json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+    return formatted_response
+    #print(response)
+    #print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
 
 

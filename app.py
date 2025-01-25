@@ -10,11 +10,7 @@ def bulk_add_users():
     delimiter = st.selectbox("Delimiter", [",",";",":"],
                              help="Delimiter for CSV file. Default is ';'. You can open the file and see which character is used between the first values")
     if st.button("Parse and Add"):
-        jira.bulk_users(st.session_state.server,
-                        st.session_state.username,
-                        st.session_state.password,
-                        st.session_state.protocol,
-                        csv, delimiter)
+        jira.bulk_users(st.session_state, csv, delimiter)
         #OUTPUT STDOUT
 
 @st.dialog("Add projects in bulk")
@@ -24,6 +20,23 @@ def bulk_add_projects():
                            help="Upload the CSV file to parse. You need to include group number, group name, project leader, project key, project name, category ID.",
                            accept_multiple_files=False)
     delimiter = st.selectbox("Delimiter", [",",";",":"],)
+    catid=st.text_input("Category ID", help="You can find the category with the Project Details function")
+    if st.button("Parse and Add"):
+        jira.bulk_projects(st.session_state, catid, csv, delimiter)
+        #OUTPUT STDOUT
+
+@st.dialog("Project Details function")
+def project_details():
+    st.subheader("Project Details")
+    if st.button("Request Project Details"):
+        p_response = jira.get_projects(st.session_state)
+        import pandas as pd
+        df = pd.read_json(p_response)
+        df.drop(columns=['self'], inplace=True)
+        st.dataframe(df)
+        #st.json(p_response)
+    if st.button("Done"):
+        st.rerun()
 
 #TITLE AND INTRO
 st.title("Jira API Functions")
@@ -67,17 +80,19 @@ if box1.button("Bulk Users", help="Create a bulk of users", use_container_width=
     else :
         st.warning("Please connect to Jira server first.")
 if box2.button("Bulk Projects", help="Create a bulk of projects. If you want to create the projects in a category, run first Project Details.",use_container_width=True):
-    if "connected" in st.session_state:
-        st.write("create bulk projects")
-    else:
-        st.warning("Please connect to Jira server first.")
+    bulk_add_projects()
+    #if "connected" in st.session_state:
+    #    st.write("create bulk projects")
+    #else:
+    #    st.warning("Please connect to Jira server first.")
 if box3.button("Bulk Delete Users", help="Delete a bulk of users",use_container_width=True):
     if "connected" in st.session_state:
         st.write("delete users")
     else:
         st.warning("Please connect to Jira server first.")
 if box4.button("Project Details", help="Get all project categories. Used if you want to add projects under a category",use_container_width=True):
-    if "connected" in st.session_state:
-        st.write("get project details")
-    else:
-        st.warning("Please connect to Jira server first.")
+    project_details()
+    #if "connected" in st.session_state:
+    #    st.write("get project details")
+    #else:
+    #    st.warning("Please connect to Jira server first.")
