@@ -59,6 +59,7 @@ def bulk_users(creds, file, delimiter):
                                   creds["password"],
                                   creds["protocol"],
                                   endpoint=endpoint, call_type=call_type, payload=payload)
+            return response
 
 
 #What is needed from the app: server creds, project key, category id,
@@ -96,17 +97,14 @@ def bulk_projects(creds, catid, file, delimiter):
                 #"notificationScheme": 10021,
                 "categoryId": catid
             } )
-            api_deploy(creds["server"],
+            response = api_deploy(creds["server"],
                        creds["username"],
                        creds["password"],
                        creds["protocol"], endpoint=endpoint, call_type=call_type, payload=payload)
-def bulk_delete_users():
+            return response
+def bulk_delete_users(creds, file, delimiter):
     endpoint = "/rest/api/2/user"
     call_type = "DELETE"
-    file = input("csv to read: ")
-    delimiter = input("csv seperator used: ")
-    while delimiter!="," and delimiter!=";" and delimiter!=".":
-        delimiter=input("ERROR Invalid delimiter. Use a valid seperator (, : ;): ")
     with open(file) as csvfile:
         reader=csv.DictReader(csvfile, delimiter=delimiter)
         for row in reader:
@@ -116,14 +114,15 @@ def bulk_delete_users():
             #PAYLOAD
             payload = "?" + "username=" + name #+ "&key=" + key
             norm_payload = payload.replace(" ", "%20")
-            api_call = "http://" + server + endpoint + norm_payload
-            print("Deploying to endpoint: " + api_call)
+            api_call = creds["protocol"] + creds["server"] + endpoint + norm_payload
+            auth = HTTPBasicAuth(creds["username"], creds["password"])
             response = requests.request(
                 call_type,
                 api_call,
                 data=payload,
                 headers=headers,
                 auth=auth)
+            return response
 
 def get_projects(creds):
     endpoint = "/rest/api/2/projectCategory"

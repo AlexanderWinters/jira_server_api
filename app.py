@@ -1,4 +1,7 @@
+import requests
 import streamlit as st
+from requests import RequestException
+
 import jira_api_adv as jira
 
 @st.dialog("Add users in bulk")
@@ -11,6 +14,14 @@ def bulk_add_users():
                              help="Delimiter for CSV file. Default is ';'. You can open the file and see which character is used between the first values")
     if st.button("Parse and Add"):
         jira.bulk_users(st.session_state, csv, delimiter)
+        try:
+            response = jira.bulk_users(st.session_state, csv, delimiter) #BULK USERS RESPONSE
+            if response.status_code == requests.codes.ok:
+                st.success("Successfully added users")
+                if st.button("Done"):
+                    st.rerun()
+        except RequestException as e:
+            st.error(f'Failed to connect. Status code: {test_response.status_code}')
         #OUTPUT STDOUT
 
 @st.dialog("Add projects in bulk")
@@ -23,6 +34,14 @@ def bulk_add_projects():
     catid=st.text_input("Category ID", help="You can find the category with the Project Details function")
     if st.button("Parse and Add"):
         jira.bulk_projects(st.session_state, catid, csv, delimiter)
+        try:
+            response = jira.bulk_projects(st.session_state, catid, csv, delimiter) #BULK PROJECT RESPONSE
+            if response.status_code == requests.codes.ok:
+                st.success("Successfully added projects")
+                if st.button("Done"):
+                    st.rerun()
+        except RequestException as e:
+            st.error(f'Failed to connect. Status code: {test_response.status_code}')
         #OUTPUT STDOUT
 
 @st.dialog("Project Details function")
@@ -35,8 +54,28 @@ def project_details():
         df.drop(columns=['self'], inplace=True)
         st.dataframe(df)
         #st.json(p_response)
-    if st.button("Done"):
+    if st.button("Done", type="primary"):
         st.rerun()
+
+
+@st.dialog("Delete users in bulk")
+def bulk_delete_users():
+    st.subheader("Upload CSV", divider="grey")
+    csv = st.file_uploader(" ", type="csv",
+                           help="Upload the CSV file to parse. You need to include name",
+                           accept_multiple_files=False)
+    delimiter = st.selectbox("Delimiter", [",",";",":"],
+                             help="Delimiter for CSV file. Default is ';'. You can open the file and see which character is used between the first values")
+    if st.button("Parse and Delete"):
+        try:
+            response = jira.bulk_delete_users(st.session_state, csv, delimiter) #DELETE RESPONSE
+            if response.status_code == requests.codes.ok:
+                st.success("Successfully deleted")
+                if st.button("Done"):
+                    st.rerun()
+        except RequestException as e:
+            st.error(f'Failed to connect. Status code: {test_response.status_code}')
+        #OUTPUT STDOUT
 
 #TITLE AND INTRO
 st.title("Jira API Functions")
@@ -51,8 +90,8 @@ with st.container(border=True):
     password = log2.text_input("Password", type="password")
     if st.button("Connect"):#, use_container_width=True):
         try:
-            response = jira.api_call_test(server, username, password, protocol)
-            if response.status_code == 200:
+            test_response = jira.api_call_test(server, username, password, protocol)
+            if test_response.status_code == 200:
                 with st.spinner("Connecting..."):
                     import time
                     time.sleep(1)
@@ -63,8 +102,8 @@ with st.container(border=True):
                 st.session_state.username = username
                 st.session_state.password = password
             else:
-                st.error(f'Failed to connect. Status code: {response.status_code}')
-        except Exception as e:
+                st.error(f'Failed to connect. Status code: {test_response.status_code}')
+        except RequestException as e:
             st.error('Error connecting to server. Make sure you are using a valid Jira server.')
 
 if "connected" in st.session_state:
@@ -80,19 +119,17 @@ if box1.button("Bulk Users", help="Create a bulk of users", use_container_width=
     else :
         st.warning("Please connect to Jira server first.")
 if box2.button("Bulk Projects", help="Create a bulk of projects. If you want to create the projects in a category, run first Project Details.",use_container_width=True):
-    bulk_add_projects()
-    #if "connected" in st.session_state:
-    #    st.write("create bulk projects")
-    #else:
-    #    st.warning("Please connect to Jira server first.")
+    if "connected" in st.session_state:
+        bulk_add_projects()
+    else:
+        st.warning("Please connect to Jira server first.")
 if box3.button("Bulk Delete Users", help="Delete a bulk of users",use_container_width=True):
     if "connected" in st.session_state:
-        st.write("delete users")
+        bulk_delete_users()
     else:
         st.warning("Please connect to Jira server first.")
 if box4.button("Project Details", help="Get all project categories. Used if you want to add projects under a category",use_container_width=True):
-    project_details()
-    #if "connected" in st.session_state:
-    #    st.write("get project details")
-    #else:
-    #    st.warning("Please connect to Jira server first.")
+    if "connected" in st.session_state:
+        project_details()
+    else:
+        st.warning("Please connect to Jira server first.")
