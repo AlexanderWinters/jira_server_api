@@ -31,3 +31,4 @@ streamlit run app.py
 - [ ] The API is based on Jira 8.14, although it has remained pretty similar. Investigate
 - [ ] Mobile app
 - [ ] Make a public instance
+- [ ] Use of API tokens
