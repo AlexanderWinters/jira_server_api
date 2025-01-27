@@ -57,7 +57,6 @@ def project_details():
     if st.button("Done", type="primary"):
         st.rerun()
 
-
 @st.dialog("Delete users in bulk")
 def bulk_delete_users():
     st.subheader("Upload CSV", divider="grey")
