@@ -32,3 +32,4 @@ streamlit run app.py
 - [ ] Mobile app
 - [ ] Make a public instance
 - [ ] Use of API tokens
+- [ ] Send emails
