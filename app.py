@@ -6,6 +6,15 @@ import jira_api_adv as jira
 
 @st.dialog("Add users in bulk")
 def bulk_add_users():
+    """
+    Handles the functionality to upload and parse a CSV file for bulk adding of users,
+    and performs the operation by triggering the integration with Jira's API. Provides
+    visual and interactive components for the user to upload files, select delimiters,
+    and perform actions to handle user addition workflow.
+
+    :raises RequestException: If the connection to the Jira API fails.
+    :raises DeprecationWarning: If any streamlit deprecations occur during the usage.
+    """
     st.subheader("Upload CSV", divider="grey")
     csv = st.file_uploader(" ", type="csv",
                            help="Upload the CSV file to parse. You need to include displayName, email, username, password.",
@@ -26,6 +35,14 @@ def bulk_add_users():
 
 @st.dialog("Add projects in bulk")
 def bulk_add_projects():
+    """
+    Handles the bulk addition of projects to a system via an uploaded CSV file. The function provides
+    a graphical interface using Streamlit to upload a CSV file, specify a delimiter, and input a category ID.
+    It then parses the data and submits it to the system for bulk project creation. The system provides
+    feedback to the user regarding the success or failure of the process.
+
+    :return: None
+    """
     st.subheader("Upload CSV", divider="grey")
     csv = st.file_uploader(" ", type="csv",
                            help="Upload the CSV file to parse. You need to include group number, group name, project leader, project key, project name, category ID.",
@@ -46,6 +63,20 @@ def bulk_add_projects():
 
 @st.dialog("Project Details function")
 def project_details():
+    """
+    Handles the interactive user interface to display project details fetched
+    from JIRA. Allows users to request project details and render them within
+    a Streamlit dataframe. Provides options to finalize the operation and
+    redirect the application flow.
+
+    Exceptions during API calls or data processing are managed externally.
+
+    :raises: This function does not explicitly raise errors. Errors
+             during API calls, JSON parsing, or data processing
+             should be handled by external mechanisms.
+
+    :return: None
+    """
     st.subheader("Project Details")
     if st.button("Request Project Details"):
         p_response = jira.get_projects(st.session_state)
@@ -59,6 +90,19 @@ def project_details():
 
 @st.dialog("Delete users in bulk")
 def bulk_delete_users():
+    """
+    Handles the bulk deletion of users by uploading a CSV file containing user data and
+    parsing it using a specified delimiter. The method interfaces with an external service
+    to execute the deletion operations and displays appropriate user feedback based on
+    the response received.
+
+    :raises RequestException: If the connection to the external service fails.
+    :param csv: CSV file containing user data for deletion.
+    :type csv: file-like
+    :param delimiter: Character used to separate values in the CSV file.
+    :type delimiter: str
+    :rtype: None
+    """
     st.subheader("Upload CSV", divider="grey")
     csv = st.file_uploader(" ", type="csv",
                            help="Upload the CSV file to parse. You need to include name",
