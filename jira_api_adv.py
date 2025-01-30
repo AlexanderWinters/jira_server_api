@@ -147,46 +147,63 @@ def bulk_projects(creds, catid, file, delimiter):
     :param catid: Integer ID representing the category to which the created projects belong.
     :param file: The file path of the CSV containing project details to create the projects.
     :param delimiter: The character used to delimit fields in the CSV file.
-    :return: A response object resulting from the API request for project creation.
+    :return: A tuple containing a list of successfully created projects and a list of errors for failed ones.
     """
     endpoint = "/rest/api/2/project"
     call_type = "POST"
     url = creds["protocol"] + creds["server"]
 
+    successes = []
+    errors = []
+
     with open(file) as csvfile:
-        reader=csv.DictReader(csvfile, delimiter=delimiter)
+        reader = csv.DictReader(csvfile, delimiter=delimiter)
         for row in reader:
-            group_number = row['Group Number']
-            group_name = row['Group Name']
-            leader = row['Project Leader']
-            p_key = row['Project Key'] + group_number
-            if row['Project Name']:
-                p_name = row['Project Name']
-            else:
+            try:
+                group_number = row['Group Number']
+                group_name = row['Group Name']
+                leader = row['Project Leader']
+                p_key = row['Project Key'] + group_number
                 p_name = p_key + group_name
-            project_description = group_name
-        
-            #PAYLOAD
-            payload = json.dumps( {
-                "key": p_key,
-                "name": p_name,
-                "projectTypeKey": "software",
-                "projectTemplateKey": "com.pyxis.greenhopper.jira:gh-scrum-template",
-                "description": project_description,
-                "lead": leader,
-                "url": url,
-                "assigneeType": "PROJECT_LEAD",
-                "avatarId": 10200,
-                #"issueSecurityScheme": 10001,
-                #"permissionScheme": 10011,
-                #"notificationScheme": 10021,
-                "categoryId": catid
-            } )
-            response = api_deploy(creds["server"],
-                       creds["username"],
-                       creds["password"],
-                       creds["protocol"], endpoint=endpoint, call_type=call_type, payload=payload)
-            return response
+                project_description = group_name
+
+                # PAYLOAD
+                payload = json.dumps({
+                    "key": p_key,
+                    "name": p_name,
+                    "projectTypeKey": "software",
+                    "projectTemplateKey": "com.pyxis.greenhopper.jira:gh-scrum-template",
+                    "description": project_description,
+                    "lead": leader,
+                    "url": url,
+                    "assigneeType": "PROJECT_LEAD",
+                    "avatarId": 10200,
+                    "categoryId": catid
+                })
+                response = api_deploy(
+                    creds["server"],
+                    creds["username"],
+                    creds["password"],
+                    creds["protocol"],
+                    endpoint=endpoint,
+                    call_type=call_type,
+                    payload=payload
+                )
+                if response.status_code == 201:
+                    successes.append(p_name)
+                else:
+                    errors.append({
+                        "project": p_name,
+                        "error": response.text
+                    })
+            except Exception as e:
+                errors.append({
+                    "project": row.get('Project Key', 'Unknown') + row.get('Group Number', ''),
+                    "error": str(e)
+                })
+
+    return successes, errors
+
 def bulk_delete_users(creds, file, delimiter):
     """
     Deletes multiple users from the system based on details provided in a CSV file.

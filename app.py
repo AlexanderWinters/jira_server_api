@@ -49,17 +49,25 @@ def bulk_add_projects():
                            accept_multiple_files=False)
     delimiter = st.selectbox("Delimiter", [",",";",":"],)
     catid=st.text_input("Category ID", help="You can find the category with the Project Details function")
+    import tempfile
     if st.button("Parse and Add"):
-        jira.bulk_projects(st.session_state, catid, csv, delimiter)
-        try:
-            response = jira.bulk_projects(st.session_state, catid, csv, delimiter) #BULK PROJECT RESPONSE
-            if response.status_code == requests.codes.ok:
-                st.success("Successfully added projects")
-                if st.button("Done"):
-                    st.rerun()
-        except RequestException as e:
-            st.error(f'Failed to connect. Status code: {test_response.status_code}')
-        #OUTPUT STDOUT
+
+        if csv is not None:
+            # Save the file temporarily
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as tmp_file:
+                tmp_file.write(csv.getbuffer())  # Write the file buffer
+                temp_file_path = tmp_file.name
+
+            # Use the temporary file path in bulk_projects
+            errors = jira.bulk_projects(st.session_state, catid, temp_file_path, delimiter)
+            if errors:
+                st.error(f"{len(errors)} project(s) failed to create.")
+                with st.expander("View Errors", expanded=True):
+                    for error in errors:
+                        st.write(error)
+            if not errors:
+                st.success("All projects were created successfully!")
+
 
 @st.dialog("Project Details function")
 def project_details():
